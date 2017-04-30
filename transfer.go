@@ -216,7 +216,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 
 	if function == "query" {
 		return t.query(stub, args)
-	} else function == "cert"{
+	} else function == "cert" {
 		return t.cert(stub, args)	
 	}
 }
