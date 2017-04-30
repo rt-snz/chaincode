@@ -149,9 +149,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 func (t *SimpleChaincode) Run(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Printf("Run called, passing through to Invoke (same function)")
 
-	if function == "invoke" {
-		return t.Invoke(stub, args)
-	} else if function == "init" {
+	if function == "init" {
 		return t.Init(stub, function, args)
 	} else if function == "delete" {
 		return t.delete(stub, args)
