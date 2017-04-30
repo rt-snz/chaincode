@@ -187,6 +187,7 @@ func (t *SimpleChaincode) getBalance(stub shim.ChaincodeStubInterface, args []st
 func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	var user, password, key_password string
+	var err error;
 
 	user = args[0];
 	key_password = user + "_p";
@@ -194,7 +195,7 @@ func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) 
 	
 	password_state_bytes, err := stub.GetState(key_password)
 
-	if password_state_bytes == nil {
+	if err != nil {
 		jsonResp := "{\"Error\":\"user is not registered" + "\"}"
 		return nil, errors.New(jsonResp)
 	}
