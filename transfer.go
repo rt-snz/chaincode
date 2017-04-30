@@ -216,8 +216,11 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	if function == "getBalance" {
 		return t.getBalance(stub, args)
 	} else if function == "cert" {
-		return t.cert(stub, args)	
+		return t.cert(stub, args)
 	}
+
+	jsonResp := "{\"Error\":\"Received unknown function Query" + "\"}"
+	return nil, erros.New(jsonResp)
 }
 
 func IsExistUser(userId string) bool {
