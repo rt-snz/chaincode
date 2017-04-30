@@ -38,7 +38,7 @@ func (t *SimpleChaincode) create_user(stub shim.ChaincodeStubInterface, args []s
 	key_password = user + "_p";
 	key_balance = user + "_b";
 	
-	err = stub.PutState(key_password, []byte(strconv.Itoa(password)))
+	err = stub.PutState(key_password, []byte(strconv.Atoi(password)))
 
 	if err != nil {
 		return nil, err
