@@ -29,6 +29,7 @@ func (t *SimpleChaincode) create_user(stub shim.ChaincodeStubInterface, args []s
 
 	var initial_asset int;
 	var user,password,key_password,key_balance string;
+	var err error;
 	
 	user = args[0];
 	password = args[1];
@@ -189,6 +190,7 @@ func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) 
 
 	var user,key_password string
 	var password_state_bytes []bytes;
+	var err error;
 
 	user = args[0];
 	key_password = user + "_p";
