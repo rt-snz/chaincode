@@ -220,7 +220,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	}
 
 	jsonResp := "{\"Error\":\"Received unknown function Query" + "\"}"
-	return nil, erros.New(jsonResp)
+	return nil, errors.New(jsonResp)
 }
 
 func IsExistUser(userId string) bool {
