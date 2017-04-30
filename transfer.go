@@ -28,7 +28,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 func (t *SimpleChaincode) create_user(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	var initial_asset int;
-	var user,password,key_password,key_balance String;
+	var user,password,key_password,key_balance string;
 	
 	user = args[0];
 	password = args[1];
@@ -52,7 +52,7 @@ func (t *SimpleChaincode) create_user(stub shim.ChaincodeStubInterface, args []s
 	return nil, nil
 }
 
-func (t *SimpleChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) transfer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	var sender, reciever string          // Entities
 	var senderAmount, recieverAmount int // Asset holdings
@@ -187,7 +187,7 @@ func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, function strin
 
 func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-	var user,key_password String
+	var user,key_password string
 	var password_state_bytes []bytes;
 
 	user = args[0];
