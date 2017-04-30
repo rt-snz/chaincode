@@ -134,7 +134,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	fmt.Printf("Invoke called, determining function")
 
 	if function == "transfer" {
-		return t.invoke(stub, args)
+		return t.transfer(stub, args)
 	} else if function == "create_user" {
 		return t.create_user(stub, args)	
 	} else if function == "init" {
