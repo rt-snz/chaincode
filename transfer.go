@@ -158,7 +158,7 @@ func (t *SimpleChaincode) Run(stub shim.ChaincodeStubInterface, function string,
 	return nil, errors.New("Received unknown function invocation")
 }
 
-func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) getBalance(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var A string // Entities
 	var err error
 
@@ -200,9 +200,6 @@ func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) 
 		return nil, errors.New(jsonResp)
 	}
 	
-	
-//	if reflect.DeepEqual(password_state_bytes, byte[](password)) {
-
 	if string(password_state_bytes) == password {
 		return []byte("200"),nil
 	}else{
@@ -216,8 +213,8 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 
 	fmt.Printf("Query called, determining function")
 
-	if function == "query" {
-		return t.query(stub, args)
+	if function == "getBalance" {
+		return t.getBalance(stub, args)
 	} else if function == "cert" {
 		return t.cert(stub, args)	
 	}
