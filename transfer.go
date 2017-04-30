@@ -187,7 +187,6 @@ func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, function strin
 func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	var user, password, key_password string
-	var password_state_bytes []byte;
 	var err error;
 
 	user = args[0];
