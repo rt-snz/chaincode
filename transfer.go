@@ -187,7 +187,6 @@ func (t *SimpleChaincode) getBalance(stub shim.ChaincodeStubInterface, args []st
 func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	var user, password, key_password string
-	var err error;
 
 	user = args[0];
 	key_password = user + "_p";
