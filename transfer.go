@@ -21,35 +21,38 @@ type SimpleChaincode struct {
 }
 
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	fmt.Printf("Init called, initializing chaincode")
+	return nil, nil
+}
 
-	var initial_asset int
-	var tmp_user string
-	var err error
 
-	initial_asset = 10000
+func (t *SimpleChaincode) create_user(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-	if len(args) == 0 {
-		return nil, errors.New("no users in args.")
+	var initial_asset int;
+	var user,password,key_password,key_balance String;
+	
+	user = args[0];
+	password = args[1];
+	initial_asset = 10000;	
+
+	key_password = user + "_p";
+	key_balance = user + "_b";
+	
+	err = stub.PutState(key_password, []byte(strconv.Itoa(password)))
+
+	if err != nil {
+		return nil, err
 	}
 
-	//Initialize the chaincode
-	for _, user := range args {
-
-		tmp_user = user
-		err = stub.PutState(tmp_user, []byte(strconv.Itoa(initial_asset))) // Write the state to the ledger
-		if err != nil {
-			return nil, err
-		}
-
+	err = stub.PutState(key_balance, []byte(strconv.Itoa(initial_asset)))
+	
+	if err != nil {
+		return nil, err
 	}
 
 	return nil, nil
 }
 
-// Transaction makes payment of X units from A to B
 func (t *SimpleChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fmt.Printf("Running invoke")
 
 	var sender, reciever string          // Entities
 	var senderAmount, recieverAmount int // Asset holdings
@@ -70,8 +73,6 @@ func (t *SimpleChaincode) invoke(stub shim.ChaincodeStubInterface, args []string
 		return nil, errors.New("No exsit user")
 	}
 
-	// Get the state from the ledger
-	// TODO: will be nice to have a GetAllState call to ledger
 	senderAmountbytes, err := stub.GetState(sender)
 	if err != nil {
 		return nil, errors.New("Failed to get state")
@@ -92,13 +93,11 @@ func (t *SimpleChaincode) invoke(stub shim.ChaincodeStubInterface, args []string
 		recieverAmount, _ = strconv.Atoi(string(recieverAmountbytes))
 	}
 
-	// Perform the execution
 	X, err = strconv.Atoi(args[2])
 	senderAmount = senderAmount - X
 	recieverAmount = recieverAmount + X
 	fmt.Printf("senderAmount = %d, recieverAmount = %d\n", senderAmount, recieverAmount)
 
-	// Write the state back to the ledger
 	err = stub.PutState(sender, []byte(strconv.Itoa(senderAmount)))
 	if err != nil {
 		return nil, err
@@ -112,7 +111,6 @@ func (t *SimpleChaincode) invoke(stub shim.ChaincodeStubInterface, args []string
 	return nil, nil
 }
 
-// Deletes an entity from state
 func (t *SimpleChaincode) delete(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Printf("Running delete")
 
@@ -122,7 +120,6 @@ func (t *SimpleChaincode) delete(stub shim.ChaincodeStubInterface, args []string
 
 	A := args[0]
 
-	// Delete the key from the state in ledger
 	err := stub.DelState(A)
 	if err != nil {
 		return nil, errors.New("Failed to delete state")
@@ -131,22 +128,17 @@ func (t *SimpleChaincode) delete(stub shim.ChaincodeStubInterface, args []string
 	return nil, nil
 }
 
-// Invoke callback representing the invocation of a chaincode
-// This chaincode will manage two accounts A and B and will transfer X units from A to B upon invoke
+
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Printf("Invoke called, determining function")
 
-	// Handle different functions
-	if function == "invoke" {
-		// Transaction makes payment of X units from A to B
-		fmt.Printf("Function is invoke")
+	if function == "transfer" {
 		return t.invoke(stub, args)
+	} else if function == "create_user" {
+		return t.create_user(stub, args)	
 	} else if function == "init" {
-		fmt.Printf("Function is init")
 		return t.Init(stub, function, args)
 	} else if function == "delete" {
-		// Deletes an entity from its state
-		fmt.Printf("Function is delete")
 		return t.delete(stub, args)
 	}
 
@@ -156,31 +148,18 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 func (t *SimpleChaincode) Run(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Printf("Run called, passing through to Invoke (same function)")
 
-	// Handle different functions
 	if function == "invoke" {
-		// Transaction makes payment of X units from A to B
-		fmt.Printf("Function is invoke")
 		return t.invoke(stub, args)
 	} else if function == "init" {
-		fmt.Printf("Function is init")
 		return t.Init(stub, function, args)
 	} else if function == "delete" {
-		// Deletes an entity from its state
-		fmt.Printf("Function is delete")
 		return t.delete(stub, args)
 	}
 
 	return nil, errors.New("Received unknown function invocation")
 }
 
-// Query callback representing the query of a chaincode
-func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	fmt.Printf("Query called, determining function")
-
-	if function != "query" {
-		fmt.Printf("Function is query")
-		return nil, errors.New("Invalid query function name. Expecting \"query\"")
-	}
+func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	var A string // Entities
 	var err error
 
@@ -189,8 +168,6 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	}
 
 	A = args[0]
-
-	// Get the state from the ledger
 	Avalbytes, err := stub.GetState(A)
 	if err != nil {
 		jsonResp := "{\"Error\":\"Failed to get state for " + A + "\"}"
@@ -205,6 +182,43 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	jsonResp := "{\"Name\":\"" + A + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
 	fmt.Printf("Query Response:%s\n", jsonResp)
 	return Avalbytes, nil
+
+}
+
+func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+
+	var user,key_password String
+	var password_state_bytes []bytes;
+
+	user = args[0];
+	key_password = user + "_p";
+	password = args[1];
+	
+	password_state_bytes, err := stub.GetState(key_password)
+
+	if password_state_bytes == nil {
+		jsonResp := "{\"Error\":\"user is not registered" + "\"}"
+		return nil, errors.New(jsonResp)
+	}
+	
+	if password_state_bytes == []byte(strconv.Itoa(password)){
+		return "OK",nil
+	}else{
+		jsonResp := "{\"Error\":\"password does not match" + "\"}"
+		return nil, errors.New(jsonResp)	
+	}
+		return nil, nil
+}
+
+func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+
+	fmt.Printf("Query called, determining function")
+
+	if function == "query" {
+		return t.query(stub, args)
+	} else function == "cert"{
+		return t.cert(stub, args)	
+	}
 }
 
 func IsExistUser(userId string) bool {
