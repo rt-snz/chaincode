@@ -203,7 +203,7 @@ func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) 
 	if string(password_state_bytes) == password {
 		return []byte("200"),nil
 	}else{
-		jsonResp := "{\"Error\":\"password does not match" + "\"}"
+		jsonResp := "{\"Error\":\"password does not match" + password_state_bytes + " " + password + "\"}"
 		return nil, errors.New(jsonResp)	
 	}
 		return nil, nil
