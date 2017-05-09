@@ -233,7 +233,7 @@ func (t *SimpleChaincode) getUser(stub shim.ChaincodeStubInterface, args []strin
         }
 
 		if(key[0:2] == "p_"){
-        	tupple := []string{ key[3:len(key)] , string(val) }
+        	tupple := []string{ key[2:len(key)] , string(val) }
         	tupples = append(tupples, tupple)
         }
     }
