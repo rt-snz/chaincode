@@ -25,7 +25,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 }
 
 
-func (t *SimpleChaincode) create_user(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) register(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	var initial_asset int;
 	var user,password,key_password,key_balance string;
@@ -37,6 +37,13 @@ func (t *SimpleChaincode) create_user(stub shim.ChaincodeStubInterface, args []s
 
 	key_password = user + "_p";
 	key_balance = user + "_b";
+	
+	Passwordbytes, err := stub.GetState(key_password)
+	
+	
+	if err != nil {
+		return nil, errors.New("user already exist")
+	}
 	
 	err = stub.PutState(key_password, []byte(password))
 
@@ -135,8 +142,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
 	if function == "transfer" {
 		return t.transfer(stub, args)
-	} else if function == "create_user" {
-		return t.create_user(stub, args)	
+	} else if function == "register" {
+		return t.register(stub, args)	
 	} else if function == "init" {
 		return t.Init(stub, function, args)
 	} else if function == "delete" {
@@ -166,7 +173,7 @@ func (t *SimpleChaincode) getBalance(stub shim.ChaincodeStubInterface, args []st
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the person to query")
 	}
 
-	A = args[0]
+	A = args[0] + "_b";
 	Avalbytes, err := stub.GetState(A)
 	if err != nil {
 		jsonResp := "{\"Error\":\"Failed to get state for " + A + "\"}"
