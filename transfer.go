@@ -218,7 +218,7 @@ func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) 
 
 func (t *SimpleChaincode) getUser(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	
-	iter,err := stub.GetStateByRange("", "")
+	iter,err := stub.RangeQueryState("", "")
 	
 	return nil, errors.New(iter)
 
