@@ -71,41 +71,33 @@ func (t *SimpleChaincode) transfer(stub shim.ChaincodeStubInterface, args []stri
 		return nil, errors.New("Incorrect number of arguments. Expecting 3")
 	}
 
-	sender = args[0]
-	reciever = args[1]
+	sender = "b_" + args[0]
+	reciever = "b_" + args[1]
+	transferAmount, err = strconv.Atoi(args[2])
 
-	isEnableSender := IsExistUser(sender)
-	isEnableReciever := IsExistUser(reciever)
-
-	if isEnableSender == false || isEnableReciever == false {
-		return nil, errors.New("No exsit user")
-	}
-
-	senderAmountbytes, err := stub.GetState(sender)
+	senderBalancebytes, err := stub.GetState(sender)
+	
 	if err != nil {
-		return nil, errors.New("Failed to get state")
-	}
-	if senderAmountbytes == nil {
-		senderAmount = 0
-	} else {
-		senderAmount, _ = strconv.Atoi(string(senderAmountbytes))
+		return nil, errors.New("Failed to get state sender")
 	}
 
-	recieverAmountbytes, err := stub.GetState(reciever)
+	recieverBalancebytes, err := stub.GetState(reciever)
+
 	if err != nil {
-		return nil, errors.New("Failed to get state")
-	}
-	if recieverAmountbytes == nil {
-		recieverAmount = 0
-	} else {
-		recieverAmount, _ = strconv.Atoi(string(recieverAmountbytes))
+		return nil, errors.New("Failed to get state reciever")
 	}
 
-	X, err = strconv.Atoi(args[2])
-	senderAmount = senderAmount - X
-	recieverAmount = recieverAmount + X
-	fmt.Printf("senderAmount = %d, recieverAmount = %d\n", senderAmount, recieverAmount)
+	senderBalance, _ = strconv.Atoi(string(senderBalancebytes))
+	recieverBalance, _ = strconv.Atoi(string(recieverBalancebytes))
 
+	senderBalance = senderBalance - transferAmount
+
+	if(senderBalance < 0){
+		return nil, errors.New("no more balance")
+	}
+
+	recieverBalance = recieverBalance + transferAmount
+	
 	err = stub.PutState(sender, []byte(strconv.Itoa(senderAmount)))
 	if err != nil {
 		return nil, err
