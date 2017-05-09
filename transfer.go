@@ -98,12 +98,12 @@ func (t *SimpleChaincode) transfer(stub shim.ChaincodeStubInterface, args []stri
 
 	recieverBalance = recieverBalance + transferAmount
 	
-	err = stub.PutState(sender, []byte(strconv.Itoa(senderAmount)))
+	err = stub.PutState(sender, []byte(strconv.Itoa(senderBalance)))
 	if err != nil {
 		return nil, err
 	}
 
-	err = stub.PutState(reciever, []byte(strconv.Itoa(recieverAmount)))
+	err = stub.PutState(reciever, []byte(strconv.Itoa(recieverBalance)))
 	if err != nil {
 		return nil, err
 	}
