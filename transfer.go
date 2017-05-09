@@ -62,9 +62,9 @@ func (t *SimpleChaincode) register(stub shim.ChaincodeStubInterface, args []stri
 
 func (t *SimpleChaincode) transfer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-	var sender, reciever string          // Entities
-	var senderAmount, recieverAmount int // Asset holdings
-	var X int                            // Transaction value
+	var sender, reciever string
+	var senderBalance, recieverBalance int
+	var transferAmount int
 	var err error
 
 	if len(args) != 3 {
