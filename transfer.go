@@ -210,10 +210,19 @@ func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) 
 	if string(password_state_bytes) == password {
 		return []byte("200"),nil
 	}else{
-		jsonResp := "{\"Error\":\"password does not match" + string(password_state_bytes) + " " + password + "\"}"
+		jsonResp := "{\"Error\":\"password does not match " + string(password_state_bytes) + " and " + password + "\"}"
 		return nil, errors.New(jsonResp)	
 	}
 		return nil, nil
+}
+
+func (t *SimpleChaincode) getUser(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	
+	iter,err := stub.GetStateByRange("", "")
+	
+	return nil, errors.New(iter)
+
+	return nil, nil
 }
 
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
@@ -224,6 +233,8 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		return t.getBalance(stub, args)
 	} else if function == "cert" {
 		return t.cert(stub, args)
+	} else if function == "getUser" {
+		return t.getUser(stub, args)
 	}
 
 	jsonResp := "{\"Error\":\"Received unknown function Query" + "\"}"
