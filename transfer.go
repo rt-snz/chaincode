@@ -217,12 +217,27 @@ func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) 
 }
 
 func (t *SimpleChaincode) getUser(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	
-	iter,err := stub.RangeQueryState("", "")
-	
-	return nil, errors.New(iter)
 
-	return nil, nil
+	var tupples [][]string
+
+	keysIter, err := stub.RangeQueryState("", "~")
+	
+	if err != nil {
+        return nil, errors.New("Unable to start the iterator")
+    }
+
+    for keysIter.HasNext() {
+        key, val, iterErr := keysIter.Next()
+        if iterErr != nil {
+            return nil, fmt.Errorf("keys operation failed. Error accessing state: %s", err)
+        }
+        tupple := []string{ key , string(val) }
+        tupples = append(tupples, tupple)
+    }
+
+    marshalledTupples, err := json.Marshal(tupples)
+    return []byte(marshalledTupples), nil
+
 }
 
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
