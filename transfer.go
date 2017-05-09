@@ -40,8 +40,8 @@ func (t *SimpleChaincode) register(stub shim.ChaincodeStubInterface, args []stri
 	
 	Passwordbytes, err := stub.GetState(key_password)
 	
-	
 	if err != nil {
+		Passwordbytes = nil
 		return nil, errors.New("user already exist")
 	}
 	
