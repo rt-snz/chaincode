@@ -232,10 +232,8 @@ func (t *SimpleChaincode) getUser(stub shim.ChaincodeStubInterface, args []strin
             return nil, fmt.Errorf("keys operation failed. Error accessing state: %s", err)
         }
 
-		key_length = len(key);
-
 		if(key[0:2] == "p_"){
-        	tupple := []string{ key[3:key_length] , string(val) }
+        	tupple := []string{ key[3:len(key)] , string(val) }
         	tupples = append(tupples, tupple)
         }
     }
