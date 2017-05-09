@@ -35,8 +35,8 @@ func (t *SimpleChaincode) register(stub shim.ChaincodeStubInterface, args []stri
 	password = args[1];
 	initial_asset = 10000;	
 
-	key_password = user + "_p";
-	key_balance = user + "_b";
+	key_password = "p_" + user ;
+	key_balance =  "b_" + user;
 	
 	Passwordbytes, err := stub.GetState(key_password)
 	
@@ -173,7 +173,7 @@ func (t *SimpleChaincode) getBalance(stub shim.ChaincodeStubInterface, args []st
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the person to query")
 	}
 
-	A = args[0] + "_b";
+	A = "b_" +args[0];
 	Avalbytes, err := stub.GetState(A)
 	if err != nil {
 		jsonResp := "{\"Error\":\"Failed to get state for " + A + "\"}"
@@ -197,7 +197,7 @@ func (t *SimpleChaincode) cert(stub shim.ChaincodeStubInterface, args []string) 
 	var err error;
 
 	user = args[0];
-	key_password = user + "_p";
+	key_password = "p_" + user;
 	password = args[1];
 	
 	password_state_bytes, err := stub.GetState(key_password)
@@ -231,8 +231,13 @@ func (t *SimpleChaincode) getUser(stub shim.ChaincodeStubInterface, args []strin
         if iterErr != nil {
             return nil, fmt.Errorf("keys operation failed. Error accessing state: %s", err)
         }
-        tupple := []string{ key , string(val) }
-        tupples = append(tupples, tupple)
+
+		key_length = len(key);
+
+		if(key[0:2] == "p_"){
+        	tupple := []string{ key[3:key_length] , string(val) }
+        	tupples = append(tupples, tupple)
+        }
     }
 
     marshalledTupples, err := json.Marshal(tupples)
