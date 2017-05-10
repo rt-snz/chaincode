@@ -94,7 +94,8 @@ func (t *SimpleChaincode) transfer(stub shim.ChaincodeStubInterface, args []stri
 
 	if(senderBalance < 0){
 		jsonResp := "{\"Error\":\"no more balance" + "\"}"
-		return []byte(jsonResp), errors.New(jsonResp)
+		strerr := "aaaaaaaaaaa"
+		return []byte(strerr), errors.New(jsonResp)
 	}
 
 	recieverBalance = recieverBalance + transferAmount
